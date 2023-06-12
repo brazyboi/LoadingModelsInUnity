@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
+    "com.siccity.gltfutility": "https://github.com/siccity/gltfutility.git",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.feature.development": "1.0.1",
     "com.unity.textmeshpro": "3.0.6",

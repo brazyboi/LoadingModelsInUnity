@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.github-glitchenzo.nugetforunity": {
+      "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "03353e7a94bd01ef6daa80e3a5fd85c7f5fa4725"
+    },
+    "com.siccity.gltfutility": {
+      "version": "https://github.com/siccity/gltfutility.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "2.0.0"
+      },
+      "hash": "96619fcd48ffe5c4ad122837a21601a6f7c20080"
+    },
     "com.unity.collab-proxy": {
       "version": "2.0.4",
       "depth": 0,
@@ -55,6 +71,13 @@
     },
     "com.unity.ide.vscode": {
       "version": "1.2.5",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
