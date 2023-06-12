@@ -9,19 +9,25 @@ using UnityEngine.Networking;
 using Newtonsoft.Json.Linq;
 using Siccity.GLTFUtility;
 using glTFLoader;
-using System.ComponentModel.Design.Serialization;
 
 public class ModelLoader : MonoBehaviour
 {
     //wrapper for model to load into
     GameObject wrapper;
+    //where all the downloaded files are stored
     string filePath;
+    //index of model
     int index = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         filePath = $"{Application.persistentDataPath}/Files/";
+        //create textures folder if doesn't exist
+        if (!Directory.Exists($"{filePath}textures/"))
+        {
+            Directory.CreateDirectory($"{filePath}textures/");
+        }
         StartCoroutine(GetModelData("http://34.230.66.189/api/?type=gltf"));
     }
 
@@ -33,6 +39,7 @@ public class ModelLoader : MonoBehaviour
 
     IEnumerator GetModelData(string url)
     {
+        //send request to api
         UnityWebRequest uwr = UnityWebRequest.Get(url);
         yield return uwr.SendWebRequest();
 
@@ -43,15 +50,23 @@ public class ModelLoader : MonoBehaviour
         else
         {
             Debug.Log("Received: " + uwr.downloadHandler.text);
+            //convert the api to a JSON
             JObject modelData = ParseApi(uwr.downloadHandler.text);
-            Debug.Log("First item: " + modelData["items"].First);
+
+            //iterate through each model in the JSON
             foreach (var item in modelData["items"])
             {
+                if (item["name"].ToObject<string>() == "desk" || item["name"].ToObject<string>() == "books")
+                {
+                    continue;
+                }
+                //create GameObject for current model
                 wrapper = new GameObject
                 {
                     name = "Model " + index
                 };
                 Debug.Log(item);
+                //urls for scene.bin and scene.gltf
                 string binUrl = item["source"][0]["url"].ToObject<string>();
                 string gltfUrl = item["source"][1]["url"].ToObject<string>();
 
@@ -63,8 +78,15 @@ public class ModelLoader : MonoBehaviour
                 }
                 else
                 {
-                    yield return StartCoroutine(DownloadFile(binUrl));
-                    yield return StartCoroutine(DownloadFile(gltfUrl));
+                    yield return StartCoroutine(DownloadFile(binUrl, GetFilePath(binUrl)));
+                    yield return StartCoroutine(DownloadFile(gltfUrl, GetFilePath(gltfUrl)));
+                    foreach (var texture in item["textures"])
+                    {
+                        string textureUrl = texture["url"].ToObject<string>();
+                        Debug.Log("Texture url: " + textureUrl);
+                        yield return StartCoroutine(DownloadFile(textureUrl, GetTextureFilePath(textureUrl)));
+                    }
+
                     ChangeBinUri(path);
                     ModelLoad(path);
                 }
@@ -73,10 +95,12 @@ public class ModelLoader : MonoBehaviour
         }
     }
 
-    IEnumerator DownloadFile(string url)
+    //downloads file to a specific path given the url
+    IEnumerator DownloadFile(string url, string path)
     {
+        Debug.Log("Path: " + path);
         UnityWebRequest uwr = UnityWebRequest.Get(url);
-        uwr.downloadHandler = new DownloadHandlerFile(GetFilePath(url));
+        uwr.downloadHandler = new DownloadHandlerFile(path);
         yield return uwr.SendWebRequest();
 
         if (uwr.result != UnityWebRequest.Result.Success)
@@ -89,6 +113,7 @@ public class ModelLoader : MonoBehaviour
         }
     }
 
+    //loads the model into Unity
     void ModelLoad(string path)
     {
         ResetWrapper();
@@ -98,6 +123,7 @@ public class ModelLoader : MonoBehaviour
         model.transform.SetParent(wrapper.transform);
     }
 
+    //resets the GameObject wrapper
     void ResetWrapper()
     {
         if (wrapper != null)
@@ -109,6 +135,7 @@ public class ModelLoader : MonoBehaviour
         }
     }
 
+    //changes the gltf's target bin uri
     void ChangeBinUri(string path)
     {
         var deserializedGltf = Interface.LoadModel(path);
@@ -124,6 +151,7 @@ public class ModelLoader : MonoBehaviour
         }
     }
 
+    //returns the file path for a file downloaded from a url
     public string GetFilePath(string url)
     {
         string[] pieces = url.Split('/');
@@ -132,6 +160,16 @@ public class ModelLoader : MonoBehaviour
         return $"{filePath}{filename}";
     }
 
+    //same as GetFilePath() but into the textures folder
+    public string GetTextureFilePath(string url)
+    {
+        string[] pieces = url.Split("/");
+        string filename = pieces[pieces.Length - 1];
+
+        return $"{filePath}textures/{filename}";
+    }
+    
+    //parses the api text into a JSON
     public JObject ParseApi(string json)
     {
         return JObject.Parse(json);
