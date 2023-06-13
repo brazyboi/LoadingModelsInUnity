@@ -9,6 +9,8 @@ using UnityEngine.Networking;
 using Newtonsoft.Json.Linq;
 using Siccity.GLTFUtility;
 using glTFLoader;
+using GLTFast;
+using Unity.VisualScripting;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -52,14 +54,11 @@ public class ModelLoader : MonoBehaviour
             Debug.Log("Received: " + uwr.downloadHandler.text);
             //convert the api to a JSON
             JObject modelData = ParseApi(uwr.downloadHandler.text);
+            Debug.Log("First item: " + modelData["items"][0]);
 
             //iterate through each model in the JSON
             foreach (var item in modelData["items"])
             {
-                if (item["name"].ToObject<string>() == "desk" || item["name"].ToObject<string>() == "books")
-                {
-                    continue;
-                }
                 //create GameObject for current model
                 wrapper = new GameObject
                 {
@@ -114,11 +113,13 @@ public class ModelLoader : MonoBehaviour
     }
 
     //loads the model into Unity
-    void ModelLoad(string path)
+    async void ModelLoad(string path)
     {
-        ResetWrapper();
+        //ResetWrapper();
         Debug.Log(path);
-        GameObject model = Importer.LoadFromFile(path);
+        GameObject model = new GameObject("model");
+        var gltf = model.AddComponent<GLTFast.GltfAsset>();
+        await gltf.Load(path);
         Debug.Log("here");
         model.transform.SetParent(wrapper.transform);
     }
