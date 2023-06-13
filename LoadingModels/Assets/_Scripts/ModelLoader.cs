@@ -14,8 +14,6 @@ using Unity.VisualScripting;
 
 public class ModelLoader : MonoBehaviour
 {
-    //wrapper for model to load into
-    GameObject wrapper;
     //where all the downloaded files are stored
     string filePath;
     //index of model
@@ -59,12 +57,24 @@ public class ModelLoader : MonoBehaviour
             //iterate through each model in the JSON
             foreach (var item in modelData["items"])
             {
-                //create GameObject for current model
-                wrapper = new GameObject
-                {
-                    name = "Model " + index
-                };
                 Debug.Log(item);
+                //transforms
+                int posX = item["position"]["x"].ToObject<int>();
+                int posY = item["position"]["y"].ToObject<int>();
+                int posZ = item["position"]["z"].ToObject<int>();
+
+                int rotX = item["rotation"]["x"].ToObject<int>();
+                int rotY = item["rotation"]["y"].ToObject<int>();
+                int rotZ = item["rotation"]["z"].ToObject<int>();
+
+                int scaleX = item["scale"]["x"].ToObject<int>();
+                int scaleY = item["scale"]["y"].ToObject<int>();
+                int scaleZ = item["scale"]["z"].ToObject<int>();
+
+                int[] tf = { posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ };
+
+                Debug.Log("Transform: " + tf);
+
                 //urls for scene.bin and scene.gltf
                 string binUrl = item["source"][0]["url"].ToObject<string>();
                 string gltfUrl = item["source"][1]["url"].ToObject<string>();
@@ -73,7 +83,7 @@ public class ModelLoader : MonoBehaviour
                 if (File.Exists(path))
                 {
                     Debug.Log("Found file locally, loading...");
-                    ModelLoad(path);
+                    ModelLoad(path, tf);
                 }
                 else
                 {
@@ -87,7 +97,7 @@ public class ModelLoader : MonoBehaviour
                     }
 
                     ChangeBinUri(path);
-                    ModelLoad(path);
+                    ModelLoad(path, tf);
                 }
                 index++;
             }
@@ -104,28 +114,30 @@ public class ModelLoader : MonoBehaviour
 
         if (uwr.result != UnityWebRequest.Result.Success)
         {
+            Debug.Log("Downloaded url: " + url);
             Debug.LogError(uwr.error);
         }
         else
         {
-            Debug.Log("Success");
+            Debug.Log("Download Success");
         }
     }
 
-    //loads the model into Unity
-    async void ModelLoad(string path)
+    //loads the model into Unity with proper transform
+    async void ModelLoad(string path, int[] tf)
     {
         //ResetWrapper();
         Debug.Log(path);
         GameObject model = new GameObject("model");
         var gltf = model.AddComponent<GLTFast.GltfAsset>();
         await gltf.Load(path);
-        Debug.Log("here");
-        model.transform.SetParent(wrapper.transform);
+        model.transform.localPosition = new Vector3(tf[0], tf[1], tf[2]);
+        model.transform.localEulerAngles = new Vector3(tf[3], tf[4], tf[5]);
+        model.transform.localScale = new Vector3(tf[6], tf[7], tf[8]);
     }
 
     //resets the GameObject wrapper
-    void ResetWrapper()
+    /*void ResetWrapper()
     {
         if (wrapper != null)
         {
@@ -134,7 +146,7 @@ public class ModelLoader : MonoBehaviour
                 Destroy(trans.gameObject);
             }
         }
-    }
+    }*/
 
     //changes the gltf's target bin uri
     void ChangeBinUri(string path)
