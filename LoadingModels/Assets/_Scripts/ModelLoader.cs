@@ -23,6 +23,11 @@ public class ModelLoader : MonoBehaviour
     void Start()
     {
         filePath = $"{Application.persistentDataPath}/Files/";
+
+        //reset folder
+        if (Directory.Exists(filePath)) { Directory.Delete(filePath, true); }
+        Directory.CreateDirectory(filePath);
+
         //create textures folder if doesn't exist
         if (!Directory.Exists($"{filePath}textures/"))
         {
@@ -128,7 +133,8 @@ public class ModelLoader : MonoBehaviour
     {
         //ResetWrapper();
         Debug.Log(path);
-        GameObject model = new GameObject("model");
+        GameObject model = new GameObject("gltf");
+        model.tag = "model";
         var gltf = model.AddComponent<GLTFast.GltfAsset>();
         await gltf.Load(path);
         model.transform.localPosition = new Vector3(tf[0], tf[1], tf[2]);
