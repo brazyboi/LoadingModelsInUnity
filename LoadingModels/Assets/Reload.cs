@@ -36,4 +36,9 @@ public class Reload : MonoBehaviour
         }
         Instantiate(modelLoader);
     }
+
+    public void ExitApp()
+    {
+        Application.Quit();
+    }
 }
