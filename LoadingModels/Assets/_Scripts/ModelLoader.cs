@@ -58,54 +58,60 @@ public class ModelLoader : MonoBehaviour
             //convert the api to a JSON
             JObject modelData = ParseApi(uwr.downloadHandler.text);
             Debug.Log("First item: " + modelData["items"][0]);
+            yield return StartCoroutine(IterateJsonItems(modelData, "people"));
+            yield return StartCoroutine(IterateJsonItems(modelData, "environment"));
+            yield return StartCoroutine(IterateJsonItems(modelData, "items"));
+        }
+    }
 
-            //iterate through each model in the JSON
-            foreach (var item in modelData["items"])
+    IEnumerator IterateJsonItems(JObject modelData, string itemType)
+    {
+        //iterate through each model in the JSON
+        foreach (var item in modelData[itemType])
+        {
+            Debug.Log(item);
+            //transforms
+            int posX = item["position"]["x"].ToObject<int>();
+            int posY = item["position"]["y"].ToObject<int>();
+            int posZ = item["position"]["z"].ToObject<int>();
+
+            int rotX = item["rotation"]["x"].ToObject<int>();
+            int rotY = item["rotation"]["y"].ToObject<int>();
+            int rotZ = item["rotation"]["z"].ToObject<int>();
+
+            int scaleX = item["scale"]["x"].ToObject<int>();
+            int scaleY = item["scale"]["y"].ToObject<int>();
+            int scaleZ = item["scale"]["z"].ToObject<int>();
+
+            int[] tf = { posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ };
+
+            Debug.Log("Transform: " + tf);
+
+            //urls for scene.bin and scene.gltf
+            string binUrl = item["source"][0]["url"].ToObject<string>();
+            string gltfUrl = item["source"][1]["url"].ToObject<string>();
+
+            string path = GetFilePath(gltfUrl);
+            if (File.Exists(path))
             {
-                Debug.Log(item);
-                //transforms
-                int posX = item["position"]["x"].ToObject<int>();
-                int posY = item["position"]["y"].ToObject<int>();
-                int posZ = item["position"]["z"].ToObject<int>();
-
-                int rotX = item["rotation"]["x"].ToObject<int>();
-                int rotY = item["rotation"]["y"].ToObject<int>();
-                int rotZ = item["rotation"]["z"].ToObject<int>();
-
-                int scaleX = item["scale"]["x"].ToObject<int>();
-                int scaleY = item["scale"]["y"].ToObject<int>();
-                int scaleZ = item["scale"]["z"].ToObject<int>();
-
-                int[] tf = { posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ };
-
-                Debug.Log("Transform: " + tf);
-
-                //urls for scene.bin and scene.gltf
-                string binUrl = item["source"][0]["url"].ToObject<string>();
-                string gltfUrl = item["source"][1]["url"].ToObject<string>();
-
-                string path = GetFilePath(gltfUrl);
-                if (File.Exists(path))
-                {
-                    Debug.Log("Found file locally, loading...");
-                    ModelLoad(path, tf);
-                }
-                else
-                {
-                    yield return StartCoroutine(DownloadFile(binUrl, GetFilePath(binUrl)));
-                    yield return StartCoroutine(DownloadFile(gltfUrl, GetFilePath(gltfUrl)));
-                    foreach (var texture in item["textures"])
-                    {
-                        string textureUrl = texture["url"].ToObject<string>();
-                        Debug.Log("Texture url: " + textureUrl);
-                        yield return StartCoroutine(DownloadFile(textureUrl, GetTextureFilePath(textureUrl)));
-                    }
-
-                    ChangeBinUri(path);
-                    ModelLoad(path, tf);
-                }
-                index++;
+                Debug.Log("Found file locally, loading...");
+                ModelLoad(path, tf);
             }
+            else
+            {
+                yield return StartCoroutine(DownloadFile(binUrl, GetFilePath(binUrl)));
+                yield return StartCoroutine(DownloadFile(gltfUrl, GetFilePath(gltfUrl)));
+                foreach (var texture in item["textures"])
+                {
+                    string textureUrl = texture["url"].ToObject<string>();
+                    Debug.Log("Texture url: " + textureUrl);
+                    yield return StartCoroutine(DownloadFile(textureUrl, GetTextureFilePath(textureUrl)));
+                }
+
+                ChangeBinUri(path);
+                ModelLoad(path, tf);
+            }
+            index++;
         }
     }
 
