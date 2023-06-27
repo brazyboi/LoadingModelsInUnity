@@ -168,8 +168,6 @@ public class ModelLoader : MonoBehaviour
 
         for (int i = 0; i < deserializedGltf.Buffers.Length; ++i)
         {
-            Debug.Log(deserializedGltf.Buffers.Length);
-            Debug.Log(deserializedGltf.Buffers[i].Uri);
             deserializedGltf.Buffers[i].Uri = index + "scene.bin";
             Debug.Log(deserializedGltf.Buffers[i].Uri);
             Interface.SaveModel(deserializedGltf, path);

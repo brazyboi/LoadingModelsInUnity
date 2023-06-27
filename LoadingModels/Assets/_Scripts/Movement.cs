@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UIElements;
 
-public class Movement : MonoBehaviour
+public class Movement : GameBase
 {
 
     /*
@@ -13,17 +14,22 @@ public class Movement : MonoBehaviour
     shift : Makes camera accelerate
     space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/
 
+    float mainSpeed = 300.0f; //regular 
 
-    float mainSpeed = 100.0f; //regular speed
     float shiftAdd = 400.0f; //multiplied by how long shift is held.  Basically running
     float maxShift = 3000.0f; //Maximum speed when holdin gshift
     float camSens = 0.25f; //How sensitive it with mouse
     private Vector3 lastMouse = new Vector3(255, 255, 255); //kind of in the middle of the screen, rather than at the top (play)
     private float totalRun = 1.0f;
 
+    void Start()
+    {
+        base.init();
+    }
+
     void Update()
     {
-        lastMouse = Input.mousePosition - lastMouse;
+        lastMouse = Input.mousePosition - lastMouse;    
         lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
         lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
         transform.eulerAngles = lastMouse;
@@ -51,18 +57,52 @@ public class Movement : MonoBehaviour
 
             p = p * Time.deltaTime;
             Vector3 newPosition = transform.position;
-            if (Input.GetKey(KeyCode.Space))
-            { //If player wants to move on X and Z axis only
+            //If player wants to move on X and Z axis only
+            if (!manager.isGodMode)
+            { 
                 transform.Translate(p);
                 newPosition.x = transform.position.x;
                 newPosition.z = transform.position.z;
                 transform.position = newPosition;
-            }
-            else
-            {
+            } else {
                 transform.Translate(p);
             }
         }
+        
+        //Zoom in/out
+        if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            if (Camera.main.fieldOfView > 15f)
+            {
+                Camera.main.fieldOfView /= 2;
+            }
+        } else if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            if (Camera.main.fieldOfView < 100f)
+            {
+                Camera.main.fieldOfView *= 2;
+            }
+        }
+
+        if (manager.isGodMode)
+        {
+            //Fly
+            if (Input.GetKey(KeyCode.Space))
+            {
+                transform.position += new Vector3(0, mainSpeed, 0) * Time.deltaTime;
+            }
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                transform.position += new Vector3(0, -1 * mainSpeed, 0) * Time.deltaTime;
+            }
+        }
+
+        //enable/disable god mode
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            manager.isGodMode = !manager.isGodMode; 
+        }
+        
     }
 
     private Vector3 GetBaseInput()

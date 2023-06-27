@@ -37,6 +37,12 @@ public class Reload : MonoBehaviour
         Instantiate(modelLoader);
     }
 
+    public void ResetView()
+    {
+        Camera.main.fieldOfView = 100f;
+        Camera.main.transform.position = new Vector3(0, 1, 0);
+    }
+
     public void ExitApp()
     {
         Application.Quit();

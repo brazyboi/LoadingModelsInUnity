@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ModelLoader
   - model
+  - GameManager
   layers:
   - Default
   - TransparentFX
