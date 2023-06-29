@@ -143,7 +143,7 @@ public class ModelLoader : MonoBehaviour
         model.tag = "model";
         var gltf = model.AddComponent<GLTFast.GltfAsset>();
         await gltf.Load(path);
-        FindBounds(model);
+        AddBoxCollider(model);
         model.transform.localPosition = new Vector3(tf[0], tf[1], tf[2]);
         model.transform.localEulerAngles = new Vector3(tf[3], tf[4], tf[5]);
         model.transform.localScale = new Vector3(tf[6], tf[7], tf[8]);
@@ -162,9 +162,10 @@ public class ModelLoader : MonoBehaviour
     }*/
 
     //adds a box collider to the model
-    void AddBoxCollider(GameObject wrapper)
+    void AddBoxCollider(GameObject model)
     {
-        
+        model.AddComponent<BoxCollider>();
+        model.GetComponent<BoxCollider>().size = FindBounds(model).size;
     }
     
     //finds the bounds of the model
