@@ -143,6 +143,7 @@ public class ModelLoader : MonoBehaviour
         model.tag = "model";
         var gltf = model.AddComponent<GLTFast.GltfAsset>();
         await gltf.Load(path);
+        FindBounds(model);
         model.transform.localPosition = new Vector3(tf[0], tf[1], tf[2]);
         model.transform.localEulerAngles = new Vector3(tf[3], tf[4], tf[5]);
         model.transform.localScale = new Vector3(tf[6], tf[7], tf[8]);
@@ -160,11 +161,29 @@ public class ModelLoader : MonoBehaviour
         }
     }*/
 
+    //adds a box collider to the model
+    void AddBoxCollider(GameObject wrapper)
+    {
+        
+    }
+    
+    //finds the bounds of the model
+    Bounds FindBounds(GameObject model)
+    {
+        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
+        Debug.Log("Renderers: " + renderers.Length);
+        Bounds combinedBounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            combinedBounds.Encapsulate(renderers[i].bounds);
+        }
+        return combinedBounds;
+    }
+
     //changes the gltf's target bin uri
     void ChangeBinUri(string path)
     {
         var deserializedGltf = Interface.LoadModel(path);
-
 
         for (int i = 0; i < deserializedGltf.Buffers.Length; ++i)
         {
