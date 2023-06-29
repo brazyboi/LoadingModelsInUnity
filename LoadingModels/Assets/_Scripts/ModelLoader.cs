@@ -166,8 +166,9 @@ public class ModelLoader : MonoBehaviour
     {
         model.AddComponent<BoxCollider>();
         model.GetComponent<BoxCollider>().size = FindBounds(model).size;
+        model.GetComponent<BoxCollider>().center = FindBounds(model).center;
     }
-    
+
     //finds the bounds of the model
     Bounds FindBounds(GameObject model)
     {
