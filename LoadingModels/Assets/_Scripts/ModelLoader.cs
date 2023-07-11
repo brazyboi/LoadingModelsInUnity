@@ -88,8 +88,11 @@ public class ModelLoader : MonoBehaviour
             Debug.Log("Transform: " + tf);
 
             //urls for scene.bin and scene.gltf
-            string binUrl = item["source"][0]["url"].ToObject<string>();
-            string gltfUrl = item["source"][1]["url"].ToObject<string>();
+            /*string binUrl = item["source"][0]["url"].ToObject<string>();
+            string gltfUrl = item["source"][1]["url"].ToObject<string>();*/
+
+            //GLB File
+            string gltfUrl = item["source"][0]["url"].ToObject<string>(); 
 
             string path = GetFilePath(gltfUrl);
             if (File.Exists(path))
@@ -99,7 +102,8 @@ public class ModelLoader : MonoBehaviour
             }
             else
             {
-                yield return StartCoroutine(DownloadFile(binUrl, GetFilePath(binUrl)));
+                //GLTF File
+                /*yield return StartCoroutine(DownloadFile(binUrl, GetFilePath(binUrl)));
                 yield return StartCoroutine(DownloadFile(gltfUrl, GetFilePath(gltfUrl)));
                 foreach (var texture in item["textures"])
                 {
@@ -109,6 +113,10 @@ public class ModelLoader : MonoBehaviour
                 }
 
                 ChangeBinUri(path);
+                ModelLoad(path, tf);*/
+                
+                //GLB File
+                yield return StartCoroutine(DownloadFile(gltfUrl, GetFilePath(gltfUrl)));
                 ModelLoad(path, tf);
             }
             index++;
