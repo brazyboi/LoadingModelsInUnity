@@ -62,17 +62,17 @@ public class FPSController : MonoBehaviour
             walkSpeed = crouchSpeed;
             runSpeed = crouchSpeed;
 
-        }*/
+        }
         else
         {
             characterController.height = defaultHeight;
             walkSpeed = 100f;
             runSpeed = 200f;
-        }
+        }*/
 
         characterController.height = defaultHeight;
-        walkSpeed = 100f;
-        runSpeed = 200f;
+        walkSpeed = 200f;
+        runSpeed = 400f;
 
         characterController.Move(moveDirection * Time.deltaTime);
 
