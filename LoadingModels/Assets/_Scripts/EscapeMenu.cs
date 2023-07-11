@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EscapeMenu : GameBase
 {
     public GameObject escapeMenu;
     public TextMeshProUGUI GodModeText;
+    public Slider heightSlider;
     public static bool isPaused = false;
 
     // Start is called before the first frame update
@@ -66,4 +68,6 @@ public class EscapeMenu : GameBase
         Cursor.visible = false;
         isPaused = false;
     }
+
+    
 }

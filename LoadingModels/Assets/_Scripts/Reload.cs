@@ -7,6 +7,8 @@ public class Reload : MonoBehaviour
 {
 
     public GameObject modelLoader;
+    public Transform playerCapsule;
+    public Slider heightSlider;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +19,7 @@ public class Reload : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Resize();
     }
 
     //reloads the scene by deleting the model loader and then regenerating it
@@ -40,7 +42,14 @@ public class Reload : MonoBehaviour
     public void ResetView()
     {
         Camera.main.fieldOfView = 100f;
-        Camera.main.transform.position = new Vector3(0, 1, 0);
+        
+    }
+
+    void Resize()
+    {
+        float val = heightSlider.value * 10;
+        playerCapsule.transform.position = new Vector3(playerCapsule.transform.position.x, val / 2, playerCapsule.transform.position.z);
+        playerCapsule.transform.localScale = new Vector3(playerCapsule.transform.localScale.x, val, playerCapsule.transform.localScale.z);
     }
 
     public void ExitApp()
