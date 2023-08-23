@@ -19,7 +19,7 @@ public class Reload : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Resize();
+        //Resize();
     }
 
     //reloads the scene by deleting the model loader and then regenerating it
