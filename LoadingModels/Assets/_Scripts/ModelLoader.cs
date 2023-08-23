@@ -71,19 +71,19 @@ public class ModelLoader : MonoBehaviour
         {
             Debug.Log(item);
             //transforms
-            int posX = item["position"]["x"].ToObject<int>();
-            int posY = item["position"]["y"].ToObject<int>();
-            int posZ = item["position"]["z"].ToObject<int>();
+            float posX = item["position"]["x"].ToObject<float>();
+            float posY = item["position"]["y"].ToObject<float>();
+            float posZ = item["position"]["z"].ToObject<float>();
 
-            int rotX = item["rotation"]["x"].ToObject<int>();
-            int rotY = item["rotation"]["y"].ToObject<int>();
-            int rotZ = item["rotation"]["z"].ToObject<int>();
+            float rotX = item["rotation"]["x"].ToObject<float>();
+            float rotY = item["rotation"]["y"].ToObject<float>();
+            float rotZ = item["rotation"]["z"].ToObject<float>();
 
-            int scaleX = item["scale"]["x"].ToObject<int>();
-            int scaleY = item["scale"]["y"].ToObject<int>();
-            int scaleZ = item["scale"]["z"].ToObject<int>();
+            float scaleX = item["scale"]["x"].ToObject<float>();
+            float scaleY = item["scale"]["y"].ToObject<float>();
+            float scaleZ = item["scale"]["z"].ToObject<float>();
 
-            int[] tf = { posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ };
+            float[] tf = { posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ };
 
             Debug.Log("Transform: " + tf);
 
@@ -143,7 +143,7 @@ public class ModelLoader : MonoBehaviour
     }
 
     //loads the model into Unity with proper transform
-    async void ModelLoad(string path, int[] tf)
+    async void ModelLoad(string path, float[] tf)
     {
         //ResetWrapper();
         Debug.Log(path);
