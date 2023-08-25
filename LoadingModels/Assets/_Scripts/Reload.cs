@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Reload : MonoBehaviour
+public class Reload : GameBase
 {
 
     public GameObject modelLoader;
@@ -13,7 +13,7 @@ public class Reload : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        base.init();
     }
 
     // Update is called once per frame
@@ -42,7 +42,7 @@ public class Reload : MonoBehaviour
     public void ResetView()
     {
         Camera.main.fieldOfView = 100f;
-        
+        manager.SetToDefaultView();
     }
 
     void Resize()

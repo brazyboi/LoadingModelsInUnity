@@ -12,16 +12,20 @@ using glTFLoader;
 using GLTFast;
 using Unity.VisualScripting;
 
-public class ModelLoader : MonoBehaviour
+public class ModelLoader : GameBase
 {
     //where all the downloaded files are stored
     string filePath;
     //index of model
     int index = 0;
+    //player
+    public GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
+        base.init();
+        
         filePath = $"{Application.persistentDataPath}/Files/";
 
         //reset folder
@@ -58,6 +62,23 @@ public class ModelLoader : MonoBehaviour
             //convert the api to a JSON
             JObject modelData = ParseApi(uwr.downloadHandler.text);
             Debug.Log("First item: " + modelData["items"][0]);
+
+            //Get default view
+            var position = modelData["default_view"]["position"];
+            var posVec = new Vector3(position["x"].ToObject<float>(), position["y"].ToObject<float>(), position["z"].ToObject<float>());
+            Debug.Log(posVec);
+            manager.default_pos = posVec;
+
+            var rotation = modelData["default_view"]["rotation"];
+            var rotVec = new Vector3(rotation["x"].ToObject<float>(), rotation["y"].ToObject<float>(), rotation["z"].ToObject<float>());
+            manager.default_rot = rotVec;
+
+            var scale = modelData["default_view"]["scale"];
+            var scaleVec = new Vector3(scale["x"].ToObject<float>(), scale["y"].ToObject<float>(), scale["z"].ToObject<float>());
+            manager.default_scale = scaleVec;
+
+            manager.SetToDefaultView();
+
             yield return StartCoroutine(IterateJsonItems(modelData, "people"));
             yield return StartCoroutine(IterateJsonItems(modelData, "environment"));
             yield return StartCoroutine(IterateJsonItems(modelData, "items"));
