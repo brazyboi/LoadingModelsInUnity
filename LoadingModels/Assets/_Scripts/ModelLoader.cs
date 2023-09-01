@@ -40,12 +40,6 @@ public class ModelLoader : GameBase
         StartCoroutine(GetModelData("http://34.230.66.189/api/?type=gltf"));
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     IEnumerator GetModelData(string url)
     {
         //send request to api
